@@ -9,7 +9,7 @@ function DashboardLayout({children}) {
   return (
     <CourseCountContext.Provider value={{totalCourse,setTotalCourse}}>
     <div>
-        <div className='md:w-64 hidden md:block fixed'>
+        <div className='w-full md:w-64 fixed top-0 left-0 md:left-auto md:top-auto'>
             <SideBar/>
         </div>
         <div className='md:ml-64'>
