@@ -9,9 +9,38 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Menu, X } from 'lucide-react';
-import { UserButton } from '@clerk/nextjs'
+import { SignOutButton } from '@clerk/nextjs'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu"
 
+  import { useUser } from '@clerk/nextjs'
+  import { db } from '@/configs/db'
+  import { USER_TABLE } from '@/configs/schema'
+  import { eq } from 'drizzle-orm'
+  import { useEffect } from 'react'
+  
 function SideBar() {
+    const {user}=useUser();
+    const [userDetail,setUserDetail]=useState();
+  
+    useEffect(()=>{
+      user&&GetUserDetail();
+    },[user])
+  
+    const GetUserDetail=async()=>{
+  
+      const result=await db.select().from(USER_TABLE)
+      .where(eq(USER_TABLE.email,user?.primaryEmailAddress?.emailAddress));
+  
+      setUserDetail(result[0]);
+  
+    }
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const MenuList = [
         {
@@ -91,22 +120,47 @@ function SideBar() {
 
                 <div className='border p-3 bg-slate-100 rounded-lg
                 absolute bottom-10 w-[85%]'>
-                    <h2 className='text-lg mb-2'>
-                        Available Credits : {(2 - totalCourse)}
-                    </h2>
-                    <Progress value={(totalCourse / 2) * 100} />
-                    <h2 className='text-sm'>
-                        {totalCourse} Out of 2 Credits Used
-                    </h2>
-                    <Link href={'/dashboard/upgrade'}>
-                        <Button size="sm" className="w-full mt-2">
-                            Upgrade
-                        </Button>
-                    </Link>
-                    <div className="mt-2">
-                        <Button size="sm" className="w-full p-3">
-                            <UserButton/> Sign Out
-                        </Button>
+                    {!user?.subscriptionId ? (
+                        <>
+                            <h2 className='text-lg mb-2'>
+                                Available Credits : {(2 - totalCourse)}
+                            </h2>
+                            <Progress value={(totalCourse / 2) * 100} />
+                            <h2 className='text-sm'>
+                                {totalCourse} Out of 2 Credits Used
+                            </h2>
+                            <Link href={'/dashboard/upgrade'}>
+                                <Button size="sm" className="w-full mt-2">
+                                    Upgrade
+                                </Button>
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <h2 className='text-lg mb-2'>
+                                Total Courses: {totalCourse}
+                            </h2>
+                            <Progress value={100} />
+                            <h2 className='text-sm'>
+                                Unlimited Courses
+                            </h2>
+                        </>
+                    )}
+                    <div className="mt-2 flex items-center justify-center">
+
+                    <Button size="sm" className="w-full mt-2" variant="outline">
+                    <DropdownMenu className="w-full">
+                            <DropdownMenuTrigger>Account</DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem><Link href={'/dashboard/profile'}>Profile</Link></DropdownMenuItem>
+                                <DropdownMenuItem><Link href={'/dashboard/upgrade'}>Subscription</Link></DropdownMenuItem>
+                                <DropdownMenuItem><Link href={"#tally-open=3XQEOz&tally-emoji-text=👋&tally-emoji-animation=wave"}>Feedback</Link></DropdownMenuItem>
+                                <DropdownMenuItem> <SignOutButton /></DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </Button>
                     </div>
                 </div>
             </div>
@@ -123,3 +177,193 @@ function SideBar() {
 }
 
 export default SideBar;
+
+/*"use client"
+
+import * as React from "react"
+import {
+  BookOpen,
+  Bot,
+  Command,
+  Frame,
+  LifeBuoy,
+  Map,
+  PieChart,
+  Send,
+  Settings2,
+  SquareTerminal,
+} from "lucide-react"
+
+import { NavMain } from "@/components/nav-main"
+import { NavProjects } from "@/components/nav-projects"
+import { NavSecondary } from "@/components/nav-secondary"
+import { NavUser } from "@/components/nav-user"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar"
+
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+  navMain: [
+    {
+      title: "Playground",
+      url: "#",
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: "History",
+          url: "#",
+        },
+        {
+          title: "Starred",
+          url: "#",
+        },
+        {
+          title: "Settings",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Models",
+      url: "#",
+      icon: Bot,
+      items: [
+        {
+          title: "Genesis",
+          url: "#",
+        },
+        {
+          title: "Explorer",
+          url: "#",
+        },
+        {
+          title: "Quantum",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Documentation",
+      url: "#",
+      icon: BookOpen,
+      items: [
+        {
+          title: "Introduction",
+          url: "#",
+        },
+        {
+          title: "Get Started",
+          url: "#",
+        },
+        {
+          title: "Tutorials",
+          url: "#",
+        },
+        {
+          title: "Changelog",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Settings",
+      url: "#",
+      icon: Settings2,
+      items: [
+        {
+          title: "General",
+          url: "#",
+        },
+        {
+          title: "Team",
+          url: "#",
+        },
+        {
+          title: "Billing",
+          url: "#",
+        },
+        {
+          title: "Limits",
+          url: "#",
+        },
+      ],
+    },
+  ],
+  navSecondary: [
+    {
+      title: "Support",
+      url: "#",
+      icon: LifeBuoy,
+    },
+    {
+      title: "Feedback",
+      url: "#",
+      icon: Send,
+    },
+  ],
+  projects: [
+    {
+      name: "Design Engineering",
+      url: "#",
+      icon: Frame,
+    },
+    {
+      name: "Sales & Marketing",
+      url: "#",
+      icon: PieChart,
+    },
+    {
+      name: "Travel",
+      url: "#",
+      icon: Map,
+    },
+  ],
+}
+
+export function AppSidebar({
+  ...props
+}) {
+  return (
+    <Sidebar variant="inset" {...props}>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <a href="#">
+                <div
+                  className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <Command className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Acme Inc</span>
+                  <span className="truncate text-xs">Enterprise</span>
+                </div>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <NavMain items={data.navMain} />
+        <NavProjects projects={data.projects} />
+        <NavSecondary items={data.navSecondary} className="mt-auto" />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
+*/

@@ -8,15 +8,15 @@ function SelectOption({selectedStudyType}) {
             icon:'/exam_1.png'
         },
         {
-            name:'Job Interview',
+            name:'Job Prep',
             icon:'/job.png'
         },
         {
-            name:'Practice',
+            name:'Skills',
             icon:'/practice.png'
         },
         {
-            name:'Coding Prep',
+            name:'Coding & Tech',
             icon:'/code.png'
         },
         {
