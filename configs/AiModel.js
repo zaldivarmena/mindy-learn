@@ -8,14 +8,14 @@ const {
   const genAI = new GoogleGenerativeAI(apiKey);
   
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash-002",
+    model: "gemini-2.5-pro-exp-03-25",
   });
   
   const generationConfig = {
     temperature: 1,
     topP: 0.95,
     topK: 40,
-    maxOutputTokens: 8192,
+    maxOutputTokens: 10000,
     responseMimeType: "application/json",
   };
 
@@ -26,6 +26,43 @@ const {
     maxOutputTokens: 8192,
     responseMimeType: "text/plain",
   };
+  
+  // Configuration for PDF parsing model
+  const pdfParsingConfig = {
+    temperature: 0.2, // Lower temperature for more accurate extraction
+    topP: 0.95,
+    topK: 40,
+    maxOutputTokens: 8192,
+  };
+  
+  // Create a model instance for PDF parsing
+  const pdfParsingModel = genAI.getGenerativeModel({
+    model: "gemini-2.5-pro-exp-03-25",
+  });
+  
+  // Function to extract and summarize text from PDF content
+  export async function parsePdfContent(pdfContent) {
+    try {
+      const prompt = `You are a PDF content extractor. I'm providing you with text extracted from a PDF file. 
+      Please extract the key information and organize it in a clear, structured format. 
+      Focus on the main concepts, definitions, and important points. 
+      If there are any tables, diagrams or complex structures, describe them in a simple way.
+      
+      PDF Content:
+      ${pdfContent}`;
+      
+      const result = await pdfParsingModel.generateContent({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: pdfParsingConfig,
+      });
+      
+      const response = result.response;
+      return response.text();
+    } catch (error) {
+      console.error("Error parsing PDF content:", error);
+      throw new Error("Failed to parse PDF content");
+    }
+  }
   
 
     export const courseOutlineAIModel = model.startChat({
