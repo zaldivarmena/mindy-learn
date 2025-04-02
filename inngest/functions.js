@@ -92,17 +92,22 @@ export const GenerateStudyTypeContent=inngest.createFunction(
     async({event,step})=>{
         const {studyType,prompt,courseId,recordId}=event.data;
 
-        const AiResult= await step.run('Generating Flashcard using AI',async()=>{
-            const result= 
-            studyType=='Flashcard'?
-            await GenerateStudyTypeContentAiModel.sendMessage(prompt):
-            await GenerateQuizAiModel.sendMessage(prompt);
+        const AiResult= await step.run(`Generating ${studyType} using AI`,async()=>{
+            let result;
+            if (studyType === 'Flashcard') {
+                result = await GenerateStudyTypeContentAiModel.sendMessage(prompt);
+            } else if (studyType === 'MindMap') {
+                // Use the prompt directly as it's now formatted in the route file
+                result = await GenerateStudyTypeContentAiModel.sendMessage(prompt);
+            } else {
+                // Default to quiz generation for other types
+                result = await GenerateQuizAiModel.sendMessage(prompt);
+            }
             const AIResult= JSON.parse(result.response.text());
             return AIResult
         })
 
         // Save the Result
-
         const DbResult=await step.run('Save Result to DB',async()=>{
             const result=await db.update(STUDY_TYPE_CONTENT_TABLE)
             .set({
@@ -110,8 +115,7 @@ export const GenerateStudyTypeContent=inngest.createFunction(
                 status:'Ready'
             }).where(eq(STUDY_TYPE_CONTENT_TABLE.id,recordId))
             
-
-            return 'Data Instered'
+            return 'Data Inserted'
         })
     }
 

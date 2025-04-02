@@ -23,82 +23,21 @@ function TopicInput({setTopic, setDifficultyLevel}) {
   const [manualTopic, setManualTopic] = useState('');
   const fileInputRef = useRef(null);
 
-  // Handle PDF file upload
+  // Simplified file upload handler - just shows file name without processing
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (file && file.type === 'application/pdf') {
-      setIsProcessingPdf(true);
       setPdfFile(file);
       setPdfName(file.name);
       
-      try {
-        // Read the PDF file as text
-        const rawText = await extractTextFromPdf(file);
-        
-        // Use the AI model to parse and structure the PDF content
-        const processedContent = await parsePdfContent(rawText);
-        
-        // Set the processed content as the topic
-        setPdfContent(processedContent);
-        
-        // If the processed content is too long, truncate it for display
-        const truncatedText = processedContent.length > 500 
-          ? processedContent.substring(0, 500) + '... (content truncated for display)' 
-          : processedContent;
-          
-        setManualTopic(truncatedText);
-        setTopic(processedContent);
-      } catch (error) {
-        console.error('Error processing PDF:', error);
-        alert('Error processing the PDF file. Please try again.');
-        setPdfFile(null);
-        setPdfName('');
-      } finally {
-        setIsProcessingPdf(false);
-      }
+      // Just notify the user that PDF processing is disabled
+      const message = `PDF "${file.name}" selected. PDF processing is currently disabled.\n\nPlease enter your topic manually.`;
+      alert(message);
+      
+      // No actual PDF processing is done
     } else {
       alert('Please upload a PDF file');
     }
-  };
-  
-  // Helper function to extract text from PDF using FileReader
-  const extractTextFromPdf = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      
-      reader.onload = async (event) => {
-        try {
-          // For basic text extraction, we'll use a simple approach
-          // This will be further processed by the AI model
-          const arrayBuffer = event.target.result;
-          
-          // Use dynamic import to load PDF.js only when needed
-          const pdfjsLib = await import('pdfjs-dist');
-          pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-          
-          const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-          let extractedText = '';
-          
-          // Extract text from each page
-          for (let i = 1; i <= Math.min(pdf.numPages, 50); i++) { // Limit to 50 pages for performance
-            const page = await pdf.getPage(i);
-            const textContent = await page.getTextContent();
-            const pageText = textContent.items.map(item => item.str).join(' ');
-            extractedText += `[Page ${i}]\n${pageText}\n\n`;
-          }
-          
-          resolve(extractedText);
-        } catch (error) {
-          reject(error);
-        }
-      };
-      
-      reader.onerror = () => {
-        reject(new Error('Failed to read the PDF file'));
-      };
-      
-      reader.readAsArrayBuffer(file);
-    });
   };
   
   // Handle YouTube URL input

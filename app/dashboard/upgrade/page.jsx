@@ -43,12 +43,12 @@ function Upgrade() {
 
   }
   return (
-    <div className="px-4 py-8">
+    <div className="px-4 py-8 relative z-0">
       <h2 className='font-medium text-3xl mb-2'>Plans</h2>
       <p className="text-muted-foreground mb-8">Update your plan to generate unlimited courses for your exam</p>
   
-      <div className="mx-auto max-w-5xl">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+      <div className="mx-auto max-w-5xl relative z-0">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 relative z-0">
           {/* Free Plan */}
           <div className="rounded-2xl border border-border bg-card p-8 shadow-sm relative flex flex-col h-full">
             <div className="mb-6">

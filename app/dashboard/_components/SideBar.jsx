@@ -78,7 +78,7 @@ function SideBar() {
                 transform transition-transform duration-300 ease-in-out
                 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}
                 md:translate-x-0 md:static md:block
-                z-40
+                z-[100]
             `}>
                 <div className='flex gap-2 items-center justify-center relative'>
                     <Image 
@@ -104,7 +104,7 @@ function SideBar() {
 
                     <div className='mt-5'>
                         {MenuList.map((menu, index) => (
-                            <Link href={menu.path} key={index} onClick={toggleMenu}>
+                            <Link href={menu.path} key={index} onClick={() => setIsMenuOpen(false)}>
                                 <div 
                                     className={`flex gap-5 items-center p-3
                                     hover:bg-slate-200 rounded-lg cursor-pointer mt-3
@@ -119,8 +119,8 @@ function SideBar() {
                 </div>
 
                 <div className='border p-3 bg-slate-100 rounded-lg
-                absolute bottom-10 w-[85%]'>
-                    {!user?.subscriptionId ? (
+                absolute bottom-10 w-[85%] z-10'>
+                    {!userDetail?.isMember ? (
                         <>
                             <h2 className='text-lg mb-2'>
                                 Available Credits : {(2 - totalCourse)}
@@ -129,7 +129,7 @@ function SideBar() {
                             <h2 className='text-sm'>
                                 {totalCourse} Out of 2 Credits Used
                             </h2>
-                            <Link href={'/dashboard/upgrade'}>
+                            <Link href={'/dashboard/upgrade'} onClick={() => setIsMenuOpen(false)}>
                                 <Button size="sm" className="w-full mt-2">
                                     Upgrade
                                 </Button>
@@ -154,10 +154,24 @@ function SideBar() {
                             <DropdownMenuContent>
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem><Link href={'/dashboard/profile'}>Profile</Link></DropdownMenuItem>
-                                <DropdownMenuItem><Link href={'/dashboard/upgrade'}>Subscription</Link></DropdownMenuItem>
-                                <DropdownMenuItem><Link href={"#tally-open=3XQEOz&tally-emoji-text=👋&tally-emoji-animation=wave"}>Feedback</Link></DropdownMenuItem>
-                                <DropdownMenuItem> <SignOutButton /></DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Link href={'/dashboard/profile'} onClick={() => setIsMenuOpen(false)} className="w-full">
+                                        Profile
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Link href={'/dashboard/upgrade'} onClick={() => setIsMenuOpen(false)} className="w-full">
+                                        Subscription
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Link href={"#tally-open=3XQEOz&tally-emoji-text=👋&tally-emoji-animation=wave"} onClick={() => setIsMenuOpen(false)} className="w-full">
+                                        Feedback
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setIsMenuOpen(false)}>
+                                    <SignOutButton />
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </Button>
@@ -168,7 +182,7 @@ function SideBar() {
             {/* Overlay for mobile menu */}
             {isMenuOpen && (
                 <div 
-                    className="fixed inset-0 bg-black/50 z-30 md:hidden" 
+                    className="fixed inset-0 bg-black/50 z-[90] md:hidden" 
                     onClick={toggleMenu}
                 />
             )}

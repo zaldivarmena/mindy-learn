@@ -4,7 +4,8 @@ import { USER_TABLE } from '@/configs/schema';
 import { useUser } from '@clerk/nextjs'
 import axios from 'axios';
 import { eq } from 'drizzle-orm';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { CourseCountContext } from './_context/CourseCountContext'
 
 function Provider({ children }) {
 
@@ -35,10 +36,12 @@ function Provider({ children }) {
 
     }
 
+    const [totalCourse, setTotalCourse] = useState(0);
+
     return (
-        <div>
+        <CourseCountContext.Provider value={{ totalCourse, setTotalCourse }}>
             {children}
-        </div>
+        </CourseCountContext.Provider>
     )
 }
 
